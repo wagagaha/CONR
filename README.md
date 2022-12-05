@@ -19,10 +19,16 @@ https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/non-cn-domain.c
 ```
 ### Apple Service
 
+或不在中国大陆提供的服务
+
+```
+https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/non-cn-domain.conf
+```
 
 ### Chore
 
+其他杂项
+
 ```
-# proxy
 https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/chore.conf
 ```
