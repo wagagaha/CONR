@@ -8,12 +8,21 @@ Rules for a Private and Clean Network Environment
 ### AdGuard Misc
 
 ```
-https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/agguard.conf
+https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/adguard.conf
 ```
 
-### Surge
+### Non CN Domain
+不在中国大陆、香港、台湾等提供服务
+
+```
+https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/non-cn-domain.conf
+```
+### Apple Service
+
+
+### Chore
 
 ```
 # proxy
-https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/surge.conf
+https://raw.githubusercontent.com/wagagaha/clean-net-rule/master/chore.conf
 ```
