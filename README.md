@@ -6,32 +6,27 @@ PC 去除广告、网站分析追踪的规则，主要是通过一些第三方�
 
 ## Surge
 
-### 广告过滤
+广告过滤
 
-### Non CN Domain
-不在中国大陆、香港、台湾等提供服务
+Non CN Domain, 不在中国大陆、香港、台湾等提供服务
 
 ```
 https://raw.githubusercontent.com/wagagaha/CONR/master/non-cn-domain.conf
 ```
-### Apple Service
-
-或不在中国大陆提供的服务
+Apple Service, 或不在中国大陆提供的服务
 
 ```
 https://raw.githubusercontent.com/wagagaha/CONR/master/apple-service.conf
 ```
 
-### 流媒体
+流媒体
 
-### 代理 Proxy
-
-其他杂项
+代理 Proxy
 
 ```
 https://raw.githubusercontent.com/wagagaha/CONR/master/chore.conf
 ```
 
-### 直连 Direct
+直连 Direct
 
 
