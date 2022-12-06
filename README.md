@@ -2,14 +2,11 @@
 
 Clean and Open Network Rules
 
-去除广告、网站分析追踪的规则，主要是在一些第三方插件，或是开源的代理规则 [SukkaW/Surge](https://github.com/SukkaW/Surge) 上做的一点点补充，持续更新
+PC 去除广告、网站分析追踪的规则，主要是通过一些第三方插件，移动设备主要是通过代理规则，在一些开源的代理规则[SukkaW/Surge](https://github.com/SukkaW/Surge) 上，基于个人使用习惯，做了一些补充，持续更新
 
-## 个人维护
-### AdGuard Misc
+## Surge
 
-```
-https://raw.githubusercontent.com/wagagaha/CONR/master/adguard.conf
-```
+### 广告过滤
 
 ### Non CN Domain
 不在中国大陆、香港、台湾等提供服务
@@ -25,12 +22,16 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/non-cn-domain.conf
 https://raw.githubusercontent.com/wagagaha/CONR/master/apple-service.conf
 ```
 
-### Chore
+### 流媒体
+
+### 代理 Proxy
 
 其他杂项
 
 ```
 https://raw.githubusercontent.com/wagagaha/CONR/master/chore.conf
 ```
+
+### 直连 Direct
 
 
