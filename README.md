@@ -14,26 +14,33 @@ PC 去除广告、网站分析追踪的规则，主要是通过一些第三方�
 
 ```bash
 # surge
-https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/non-cn-domain.conf
+RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/non-cn-domain.conf
 ```
 ## Apple Service
 
-或不在中国大陆提供的服务
+不在中国大陆提供的服务或所提供的服务不完整，比如 Podcast, Apple News
 
 ```bash
 # surge
-https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/apple-service.conf
+RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/apple-service.conf
 ```
 
 ## 流媒体
 
 ## 代理 Proxy
 
+Domain
+
 ```bash
 # surge
-https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/chore.conf
+RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-domain.conf
+```
+IP
+```bash
+# surge
+RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-ip.conf
 ```
 
-## 直连 Direct
+## 直连Direct
 
 
