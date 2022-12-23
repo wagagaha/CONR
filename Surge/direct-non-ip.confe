@@ -6288,9 +6288,4 @@ DOMAIN,api.goodnotescloud.com
 DOMAIN-SUFFIX,edu.cn
 DOMAIN,cubox.pro
 DOMAIN,api.juejin.cn
-DOMAIN,mon.zijieapi.com
-DOMAIN-SUFFIX,bytedance.com
-DOMAIN-SUFFIX,byteimg.com
-DOMAIN-SUFFIX,ibytedapm.com
-DOMAIN-SUFFIX,bytescm.com
-DOMAIN-SUFFIX,runoob.com
+DOMAIN,api.juejin.cn
