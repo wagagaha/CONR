@@ -3,11 +3,13 @@
 import re
 import base64
 import json
+import requests
+import urllib.parse
 
 # 订阅格式转换
 class Parser:
     """协议解析
-    支持对 ss, ssr, vmess, torjan 等协议类型进行格式化解析
+    支持对 ss, ssr, vmess, trojan 等协议类型进行格式化解析
     Attributes:
         url: 订阅地址
         b64_encoded: 是否 base64 编码 
@@ -24,8 +26,7 @@ class Parser:
         pass
 
     def vmess(self) -> str:
-        """
-        vmess parse
+        """vmess parse
         format:
             {
                 "v": "2",
@@ -43,7 +44,7 @@ class Parser:
                 "sni": "www.ccc.com"
             }
         """
-        vmess_share_format = {
+        share_format = {
             "ps": None,
             "add": None,
             "port": None,
@@ -55,16 +56,31 @@ class Parser:
         self.data = base64.b64decode(self.data).decode()
         # loads as json
         self.data = json.loads(self.data) 
-        for k in vmess_share_format:
-            vmess_share_format[k] = self.data[k]
-        surge_vmess_format = f"{vmess_share_format['ps']} = vmess, {vmess_share_format['add']}, {vmess_share_format['port']}, username={vmess_share_format['id']}, skip-cert-verify=true, ws=true, vmess-aead=true, tls=true, tfo=true"
-        print(surge_vmess_format)
-        return surge_vmess_format
+        for k in share_format:
+            share_format[k] = self.data[k]
+        surge_format = f"{share_format['ps']} = vmess, {share_format['add']}, {share_format['port']}, username={share_format['id']}, skip-cert-verify=true, ws=true, vmess-aead=true, tls=true, tfo=true"
+        return surge_format
         
 
-    # torjan parse
-    def torjan(self):
-        pass
+    # trojan parse
+    def trojan(self):
+        """trojan parse
+        format:
+            trojan://{password}@{host}:{port}?allowInsecure=1&peer=example.com&sni={sni}#{tag}
+        """
+        # split the data
+        share_format = {
+            "host": "".join(re.findall(r"trojan://[0-9a-zA-z-]+@(.*):", self.data)),
+            "port": "".join(re.findall(r"trojan://.*:([0-9]+)", self.data)),
+            "password": "".join(re.findall(r"trojan://([0-9a-zA-z-]+)@", self.data)),
+            "sni": "".join(re.findall(r"sni=(.*)#", self.data)),
+            "tag": "".join(re.findall(r"#(.*)$", self.data)),
+        }
+        surge_format = f"{share_format['tag']} = trojan, {share_format['host']}, {share_format['port']}, password={share_format['password']}, sni={share_format['sni']}, skip-cert-verify=true, tls=true, tfo=true"
+        print(surge_format)
+        return surge_format
+
+        
         
     # parser 选择
     def parse(self) -> None:
@@ -74,13 +90,25 @@ class Parser:
             self.ss()
         elif self.protocol == "vmess":
             self.vmess()
-        elif self.protocol == "torjan":
-            self.torjan()
+        elif self.protocol == "trojan":
+            self.trojan()
         else:
             print("unsupported protocol: ", self.protocol)
 # 订阅下载
-def download(url:str) -> str:
-    pass
+def download(url:str, b64:bool) -> str:
+    """download from subscribe url
+    Args:
+        url: subscribe url
+        b64: whether the data is Base64 encoded 
+    Return:
+        data
+    """
+    res = requests.get(url)
+    if b64:
+        res = base64.b64decode(res.text).decode()
+    res = urllib.parse.unquote(res)
+    print(res)
+    return res
 # 去重
 def deduplicate() -> None:
     pass
@@ -93,7 +121,5 @@ def tag_parser() -> None:
 
 
 if __name__ == "__main__":
-    data = "vmess://"
-    p = Parser(data, "vmess")
-    p.parse()    
+    pass
 
