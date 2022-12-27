@@ -87,8 +87,6 @@ class Parser:
             node = base64.b64decode(node).decode().strip()
              # loads as json
             node = json.loads(node)
-            if node['add'] == "256.256.256.256":
-                continue
             self.data[i] = f"{node['ps']} = vmess, {node['add']}, {node['port']}, username={node['id']}, skip-cert-verify=true, ws=true, vmess-aead=true, tls=true, tfo=true"        
 
     # trojan parse
@@ -185,7 +183,7 @@ def tag_parser(prefix:str, node_dict: dict) -> dict:
         if v != cur_tag:
             cur_tag = v
             index = 0
-        node_dict[k] = prefix + v + str(index).zfill(2)
+        node_dict[k] = f"{prefix}-{v}-{str(index).zfill(2)}"
         index+=1
     # 交换 key, value
     node_dict = dict(zip(node_dict.values(), node_dict.keys()))
@@ -215,11 +213,16 @@ def read_config() -> dict:
 
 
 if __name__ == "__main__":
+    with open("./template.conf", "r") as fp:
+        template = fp.read()
+    fp = open("./custom.conf", "a+")
+    fp.write(template)
     try:
         nodes = read_config()
     except:
         print("read subscribe file error")
         exit
+    node_groups = []
     for k,v in nodes.items():
         # 配置下载
         try:
@@ -241,7 +244,14 @@ if __name__ == "__main__":
         node_deduplicate_dict = deduplicate(node_parsed_list)
         # 标签解析
         node_tag_parsed_dict = tag_parser(k.upper(), node_deduplicate_dict)
-
-        # 配置分组
-        group = gen_group(k.upper(), node_tag_parsed_dict)
-        print(group)
+        for tag,v in node_tag_parsed_dict.items():
+            line = f"{tag} = {v}\n"
+            fp.write(line)
+        # 节点分组
+        node_groups.append(gen_group(k.upper(), node_tag_parsed_dict))
+    with open("./custom.group", "r") as f:
+        custom_group = f.read()
+    fp.write(f"{custom_group}\n")
+    for g in node_groups:
+        fp.write(f"{g}\n")
+    fp.close()
