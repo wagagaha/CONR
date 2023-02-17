@@ -49,5 +49,3 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-ip.conf
 # surge
 https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/direct-non-ip.conf
 ```
-
-
