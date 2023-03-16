@@ -24,7 +24,7 @@ RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/apple-serv
 ```
 代理 CDN 域名
 ```bash
-RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-cdn-domain.conf
+DOMAIN-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-cdn-domain.conf
 ```
 代理流媒体域名
 ```
