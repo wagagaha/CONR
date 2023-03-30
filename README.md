@@ -2,9 +2,8 @@
 
 Clean and Open Network Rules
 
-在一些开源的代理规则 [SukkaW/Surge](https://github.com/SukkaW/Surge) 上，基于个人使用习惯，做了一些修改补充，持续更新
 
-## Surge
+## 通用规则
 
 Non CN Domain - 不在中国大陆、香港、台湾等提供服务
 ```bash
@@ -16,7 +15,7 @@ RULE-SEt,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/proxy-doma
 ```
 直连域名
 ```bash
-RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/Surge/direct-domain.conf
+RULE-SET,https://raw.githubusercontent.com/wagagaha/CONR/master/rules/direct-domain.conf
 ```
 Apple Service - 不在中国大陆提供的服务或所提供的服务不完整，比如 Podcast, Apple News
 ```bash
