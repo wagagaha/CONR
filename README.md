@@ -30,7 +30,7 @@ DIRECT or PROXY can both be used to access
 https://raw.githubusercontent.com/wagagaha/CONR/master/apple.conf
 ```
 
-## DOMAIN-SET, Apple-Service
+## RULE-SET, Apple-Service
 
 Not available in mainland China
 ```bash
