@@ -50,5 +50,21 @@ Not available or service limited in mainland China, may be limited to certain co
 https://raw.githubusercontent.com/wagagaha/CONR/master/certain-proxy.conf
 ```
 
+## IP RULE-SET
+Reject
+```
+https://raw.githubusercontent.com/wagagaha/CONR/master/reject-ip.conf
+```
+
+Stream
+```
+https://raw.githubusercontent.com/wagagaha/CONR/master/stream-ip.conf
+
+```
+Proxy
+```
+https://raw.githubusercontent.com/wagagaha/CONR/master/proxy-ip.conf
+```
+
 # Thanks
 The domain/IP catalog has been collected from the internet and the following open-source project, with slight modifications made by me.
