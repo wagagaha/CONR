@@ -67,4 +67,4 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/proxy-ip.conf
 ```
 
 # Thanks
-The domain/IP catalog has been collected from the internet and the following open-source project, with slight modifications made by me.
+The domain/IP catalog has been collected from the internet and open source project.
