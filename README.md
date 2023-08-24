@@ -7,7 +7,7 @@ If you only want to block ads, please do not use this rule, as platforms like we
 [The differences between different REJECT strategies](https://community.nssurge.com/d/1213-reject)
 
 ```bash
-https://raw.githubusercontent.com/wagagaha/CONR/master/reject-domain.conf
+https://raw.githubusercontent.com/wagagaha/CONR/master/reject.conf
 ```
 
 ## DOMAIN-SET, DIRECT
