@@ -15,6 +15,14 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/reject.conf
 https://raw.githubusercontent.com/wagagaha/CONR/master/direct-domain.conf
 ```
 
+## RULE-SET, High-Risk-Direct
+
+recommend to use reliable ip
+
+```bash
+https://raw.githubusercontent.com/wagagaha/CONR/master/high-risk-direct.conf
+```
+
 ## DOMAIN-SET, PROXY
 
 ```bash
@@ -41,7 +49,7 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/apple-service.conf
 
 ## RULE-SET, High-Risk-Proxy
 
-Involving privacy, economy and other aspects, recommend to use reliable and stable proxy
+Involving privacy, economy and other service with strict risk control, recommend to use reliable and stable proxy
 ```bash
 https://raw.githubusercontent.com/wagagaha/CONR/master/high-risk-proxy.conf
 ```
