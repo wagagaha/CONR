@@ -34,17 +34,17 @@ https://raw.githubusercontent.com/wagagaha/CONR/master/proxy-domain.conf
 https://raw.githubusercontent.com/wagagaha/CONR/master/stream.conf
 ```
 
-## DOMAIN-SET, Apple 
+## RULE-SET, Apple-Direct
 DIRECT or PROXY can both be used to access
 ```bash
-https://raw.githubusercontent.com/wagagaha/CONR/master/apple.conf
+https://raw.githubusercontent.com/wagagaha/CONR/master/apple-direct.conf
 ```
 
-## RULE-SET, Apple-Service
+## RULE-SET, Apple-Proxy
 
 Not available in mainland China
 ```bash
-https://raw.githubusercontent.com/wagagaha/CONR/master/apple-service.conf
+https://raw.githubusercontent.com/wagagaha/CONR/master/apple-proxy.conf
 ```
 
 ## RULE-SET, High-Risk-Proxy
