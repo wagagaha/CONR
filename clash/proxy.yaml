@@ -1,125 +1,125 @@
 payload:
   # OPENAI
-  - DOMAIN-SUFFIX,openai.com
-  - DOMAIN-SUFFIX,auth0.com
-  - DOMAIN-SUFFIX,identrust.com
-  - DOMAIN,openaiapi-site.azureedge.net
+  - "+.openai.com"
+  - "+.auth0.com"
+  - "+.identrust.com"
+  - openaiapi-site.azureedge.net
 
   # >> Duolingo
-  - DOMAIN-SUFFIX,duolingo.com
+  - "+.duolingo.com"
 
   # >> Linkedin
-  - DOMAIN-SUFFIX,linkedin.com
-  - DOMAIN-SUFFIX,linkedinmobileapp.com
-  - DOMAIN-SUFFIX, licdn.com
-  - DOMAIN-SUFFIX, linkedin.com
-  - DOMAIN, lnkd.demdex.net
-  - DOMAIN-SUFFIX, trkn.us
+  - "+.linkedin.com"
+  - "+.linkedinmobileapp.com"
+  - "+. licdn.com"
+  - "+. linkedin.com"
+  - lnkd.demdex.net
+  - "+. trkn.us"
 
   # >> Google Voice
-  - DOMAIN,lens.l.google.com
+  - lens.l.google.com
 
   # >> Google Labs
-  - DOMAIN,labs.google.com
+  - labs.google.com
 
   # >> Whats APP
-  - DOMAIN-SUFFIX,whatsapp.com
-  - DOMAIN-SUFFIX,whatsapp.net
+  - "+.whatsapp.com"
+  - "+.whatsapp.net"
 
   # >> Bard (US or UK)
-  - DOMAIN,bard.google.com
+  - bard.google.com
 
   # >> Bing
-  - DOMAIN-SUFFIX,bing.com
+  - "+.bing.com"
 
   # >> Claude
-  - DOMAIN-SUFFIX,claude.ai
-  - DOMAIN-SUFFIX,anthropic.com
+  - "+.claude.ai"
+  - "+.anthropic.com"
   # Paypal
-  - DOMAIN-SUFFIX,paypal.com
-  - DOMAIN-SUFFIX,paypalobjects.com
+  - "+.paypal.com"
+  - "+.paypalobjects.com"
   # Wise
-  - DOMAIN-SUFFIX,wise.com
+  - "+.wise.com"
   # Ozan
-  - DOMAIN-SUFFIX,ozan.com
+  - "+.ozan.com"
   # >> Crypto Currency
-  - DOMAIN-SUFFIX,onekey.so
+  - "+.onekey.so"
   # Stripe
-  - DOMAIN-SUFFIX,stripe.com
-  - DOMAIN-SUFFIX,stripe.network
+  - "+.stripe.com"
+  - "+.stripe.network"
   # giffgaff
-  - DOMAIN-SUFFIX,giffgaff.com
+  - "+.giffgaff.com"
   # Apple
-  - DOMAIN,guzzoni.apple.com
-  - DOMAIN,apps.apple.com
-  - DOMAIN,xp.apple.com
-  - DOMAIN,bag.itunes.apple.com
-  - DOMAIN,api-edge.apps.apple.com
-  - DOMAIN,api.apps.apple.com
-  - DOMAIN,play.itunes.apple.com
-  - DOMAIN,se.itunes.apple.com
-  - DOMAIN,se-edge.itunes.apple.com
-  - DOMAIN,su.itunes.apple.com
-  - DOMAIN,upp.itunes.apple.com
-  - DOMAIN,beta.music.apple.com
+  - guzzoni.apple.com
+  - apps.apple.com
+  - xp.apple.com
+  - bag.itunes.apple.com
+  - api-edge.apps.apple.com
+  - api.apps.apple.com
+  - play.itunes.apple.com
+  - se.itunes.apple.com
+  - se-edge.itunes.apple.com
+  - su.itunes.apple.com
+  - upp.itunes.apple.com
+  - beta.music.apple.com
   - DOMAIN-KEYWORD,buy.itunes.apple.com
-  - DOMAIN-SUFFIX,itunes-apple.com.akadns.net
+  - "+.itunes-apple.com.akadns.net"
 
   # Trailer
-  - DOMAIN-SUFFIX,hls.itunes.apple.com
+  - "+.hls.itunes.apple.com"
 
   # Movie Stream
-  - DOMAIN-SUFFIX,hls-amt.itunes.apple.com
+  - "+.hls-amt.itunes.apple.com"
 
   # iTunes Music Stream
-  - DOMAIN-SUFFIX,audio-ssl.itunes.apple.com
-  - DOMAIN-SUFFIX,cdn-apple.com
-  - DOMAIN,cdn.apple-cloudkit.com
+  - "+.audio-ssl.itunes.apple.com"
+  - "+.cdn-apple.com"
+  - cdn.apple-cloudkit.com
 
   # Developer
-  - DOMAIN,devimages-cdn.apple.com
-  - DOMAIN,devstreaming-cdn.apple.com
-  - DOMAIN,js-cdn.music.apple.com
-  - DOMAIN,docs-assets.developer.apple.com
+  - devimages-cdn.apple.com
+  - devstreaming-cdn.apple.com
+  - js-cdn.music.apple.com
+  - docs-assets.developer.apple.com
 
   # Other
-  - DOMAIN-SUFFIX,apple-dns.net
+  - "+.apple-dns.net"
 
   # OCSP
-  - DOMAIN-SUFFIX,ocsp.apple.com
+  - "+.ocsp.apple.com"
   # Apple News
-  - DOMAIN-SUFFIX,apple.news
-  - DOMAIN,news-events.apple.com
-  - DOMAIN,news-edge.apple.com
-  - DOMAIN,apple.comscoreresearch.com
+  - "+.apple.news"
+  - news-events.apple.com
+  - news-edge.apple.com
+  - apple.comscoreresearch.com
 
   # locationd
-  - DOMAIN,gs-loc.apple.com
-  - DOMAIN-SUFFIX,ls.apple.com.akadns.net
-  - DOMAIN-SUFFIX,ls.apple.com.edgesuite.net
-  - DOMAIN-SUFFIX,ls.apple.com
+  - gs-loc.apple.com
+  - "+.ls.apple.com.akadns.net"
+  - "+.ls.apple.com.edgesuite.net"
+  - "+.ls.apple.com"
 
   # iMessage
-  - DOMAIN-SUFFIX,ess.apple.com
+  - "+.ess.apple.com"
 
   # Apple Music
-  - DOMAIN-SUFFIX,music.apple.com
-  - DOMAIN-SUFFIX,sonos-music.apple.com
+  - "+.music.apple.com"
+  - "+.sonos-music.apple.com"
 
   # Configuration
-  - DOMAIN,configuration.apple.com
+  - configuration.apple.com
 
   # Others
-  - DOMAIN-SUFFIX,aaplimg.com
-  - DOMAIN-SUFFIX,apple.co
-  - DOMAIN-SUFFIX,itunes.com
-  - DOMAIN-SUFFIX,itunes.apple.com
-  - DOMAIN-SUFFIX,apple
-  - DOMAIN,weather-analytics-events.apple.com
+  - "+.aaplimg.com"
+  - "+.apple.co"
+  - "+.itunes.com"
+  - "+.itunes.apple.com"
+  - "+.apple"
+  - weather-analytics-events.apple.com
 
   # iCloud 上传和下载
-  - DOMAIN-SUFFIX,icloud-content.com
-  - DOMAIN-SUFFIX,me.com
-  - DOMAIN-SUFFIX,apple.com
-  - DOMAIN-SUFFIX,icloud.com
-  - DOMAIN-SUFFIX,apple-cloudkit.com
+  - "+.icloud-content.com"
+  - "+.me.com"
+  - "+.apple.com"
+  - "+.icloud.com"
+  - "+.apple-cloudkit.com"
