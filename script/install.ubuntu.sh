@@ -158,17 +158,16 @@ install_gost() {
     echo "选择流量伪装方式"
     echo "1) HTTP 状态码(404)"
     echo "2) Web 服务(Nginx 默认页面)"
-    while true; do
-        read -p "输入选择 (1-2) 或者 q 退出安装: " user_choice
-        case $user_choice in
-          1)
-              probe_resist="code:404"
-              break
-              ;;
-          2)
-              mkdir -p /var/www/html
-              # write nginx default page to index.html
-              cat > /var/www/html/index.html <<EOF
+    read -p "输入选择 (1-2) 或者 q 退出安装: " user_choice
+    case $user_choice in
+        1)
+            probe_resist="code:404"
+            break
+            ;;
+        2)
+            mkdir -p /var/www/html
+            # write nginx default page to index.html
+            cat > /var/www/html/index.html <<EOF
 <!DOCTYPE html>
 <html>
 <head>
@@ -186,23 +185,18 @@ install_gost() {
 </body>
 </html>
 EOF
-              # create www-data user and group
-              sudo groupadd -g 101 www-data
-              sudo useradd -u 101 -g 101 -d /var/www/html www-data
-              sudo chown -R www-data:www-data /var/www/html
-              probe_resist="file:/var/www/html/index.html"
-              break
-              ;;
-          q)
-              echo "程序退出"
-              exit 1
-              ;;
-          *)
-              echo -e "${COLOR_ERROR}无效的选择，请输入选择 (1-2) 或者 q 退出安装。${COLOR_NONE}"
-              ;;
-        esac
-    done
-    
+            sudo chown -R www-data:www-data /var/www/html
+            probe_resist="file:/var/www/html/index.html"
+            break
+            ;;
+        q)
+            echo "程序退出"
+            exit 1
+            ;;
+        *)
+            echo -e "${COLOR_ERROR}无效的选择，请输入选择 (1-2) 或者 q 退出安装。${COLOR_NONE}"
+            ;;
+    esac
 
     if [[ -z "${PORT// }" ]] || ! [[ "${PORT}" =~ ^[0-9]+$ ]] || ! [ "$PORT" -ge 1 -a "$PORT" -le 655535 ]; then
         echo -e "${COLOR_ERROR}非法端口,使用默认端口 443 !${COLOR_NONE}"
@@ -218,8 +212,8 @@ EOF
     fi
 
     if [[ -z "${PASS// }" ]]; then
-        echo -e "${COLOR_SUCC}密码: ${USER}${COLOR_NONE}"
         PASS=$DEFAULT_PASS
+        echo -e "${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
     fi
 
     BIND_IP=0.0.0.0
