@@ -162,7 +162,6 @@ install_gost() {
     case $user_choice in
         1)
             probe_resist="code:404"
-            break
             ;;
         2)
             mkdir -p /var/www/html
@@ -187,7 +186,6 @@ install_gost() {
 EOF
             sudo chown -R www-data:www-data /var/www/html
             probe_resist="file:/var/www/html/index.html"
-            break
             ;;
         q)
             echo "程序退出"
@@ -208,7 +206,6 @@ EOF
         exit 1
     else
         echo -e "${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
-        exit 1
     fi
 
     if [[ -z "${PASS// }" ]]; then
