@@ -225,6 +225,9 @@ EOF
     CERT=${CERT_DIR}/live/${DOMAIN}/fullchain.pem
     KEY=${CERT_DIR}/live/${DOMAIN}/privkey.pem
 
+    # remove the container if exixts
+    sudo docker rm -f gost >/dev/null 2>&1
+    # run gost
     sudo docker run -d --name gost \
         -v ${CERT_DIR}:${CERT_DIR}:ro \
         --net=host ginuerzh/gost \
