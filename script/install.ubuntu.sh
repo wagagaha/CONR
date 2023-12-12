@@ -196,22 +196,29 @@ EOF
             ;;
     esac
 
+    
+
+    if [[ -z "${USER// }" ]]; then
+        echo -e "${COLOR_ERROR}用户名不能为空 !${COLOR_NONE}"
+        exit 1        
+    fi
+
     if [[ -z "${PORT// }" ]] || ! [[ "${PORT}" =~ ^[0-9]+$ ]] || ! [ "$PORT" -ge 1 -a "$PORT" -le 655535 ]; then
         echo -e "${COLOR_ERROR}非法端口,使用默认端口 443 !${COLOR_NONE}"
         PORT=443
     fi
 
-    if [[ -z "${USER// }" ]]; then
-        echo -e "${COLOR_ERROR}用户名不能为空 !${COLOR_NONE}"
-        exit 1
-    else
-        echo -e "${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
-    fi
+    
 
     if [[ -z "${PASS// }" ]]; then
         PASS=$DEFAULT_PASS
-        echo -e "${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
     fi
+
+    echo -e "${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
+    echo -e "${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
+    echo -e "${COLOR_SUCC}HTTP/2端口: ${PORT}${COLOR_NONE}"
+
+    echo "开始启动 Gost 代理程序"
 
     BIND_IP=0.0.0.0
     CERT_DIR=/etc/letsencrypt/
@@ -222,6 +229,10 @@ EOF
         -v ${CERT_DIR}:${CERT_DIR}:ro \
         --net=host ginuerzh/gost \
         -L "http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}&probe-resist=${probe_resist}"
+    
+    echo -e "${COLOR_SUCC}Gost 代理程序已经启动成功！${COLOR_NONE}"
+    echo "Surge配置: ${DOMAIN} = https, ${DOMAIN}, ${PORT}, username=${USER}, password=${PASS}, over-tls=true"
+    echo "Quantumult X 配置: http=${DOMAIN}:${PORT}, username=${USER}, password=${PASS}, over-tls=true, fast-open=false, udp-relay=false, tag=${DOMAIN}"
 }
 
 crontab_exists() {
