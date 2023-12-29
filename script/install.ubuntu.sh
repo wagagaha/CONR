@@ -95,6 +95,13 @@ install_docker() {
     fi
 }
 
+check_docker() {
+    if ! [ -x "$(command -v docker)" ]; then
+        echo -e "${COLOR_ERROR}未发现Docker，请求安装 Docker ! ${COLOR_NONE}" 
+        return
+    fi
+}
+
 
 check_container(){
     has_container=$(sudo docker ps --format "{{.Names}}" | grep "$1")
@@ -106,6 +113,7 @@ check_container(){
         return 1
     fi
 }
+
 
 install_certbot() {
     echo "开始安装 certbot 命令行工具"
@@ -161,7 +169,7 @@ install_gost() {
     read -p "输入选择 (1-2) 或者 q 退出安装: " user_choice
     case $user_choice in
         1)
-            probe_resist="code:404"
+            PROBE_RESIST="code:404"
             ;;
         2)
             mkdir -p /var/www/html
@@ -185,7 +193,7 @@ install_gost() {
 </html>
 EOF
             sudo chown -R www-data:www-data /var/www/html
-            probe_resist="file:/var/www/html/index.html"
+            PROBE_RESIST="file:/var/www/html/index.html"
             ;;
         q)
             echo "程序退出"
@@ -195,8 +203,6 @@ EOF
             echo -e "${COLOR_ERROR}无效的选择，请输入选择 (1-2) 或者 q 退出安装。${COLOR_NONE}"
             ;;
     esac
-
-    
 
     if [[ -z "${USER// }" ]]; then
         echo -e "${COLOR_ERROR}用户名不能为空 !${COLOR_NONE}"
@@ -228,11 +234,17 @@ EOF
     sudo docker run -d --name gost \
         -v ${CERT_DIR}:${CERT_DIR}:ro \
         --net=host ginuerzh/gost \
-        -L "http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}&probe-resist=${probe_resist}"
+        -L "http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}&probe_resist=${PROBE_RESIST}&konck=www.google.com"
     
     echo -e "${COLOR_SUCC}Gost 代理程序已经启动成功！${COLOR_NONE}"
+    
+    echo "通过浏览器插件（e.g. SwitchyOmega）代理，请先访问 www.google.com"
     echo "Surge配置: ${DOMAIN} = https, ${DOMAIN}, ${PORT}, username=${USER}, password=${PASS}, over-tls=true"
     echo "Quantumult X 配置: http=${DOMAIN}:${PORT}, username=${USER}, password=${PASS}, over-tls=true, fast-open=false, udp-relay=false, tag=${DOMAIN}"
+}
+
+
+install_hysteria2(){
 }
 
 crontab_exists() {
@@ -268,7 +280,7 @@ init(){
     COLUMNS=50
     echo -e "\n菜单选项\n"
 
-    while [ 1 == 1 ]
+    while true
     do
         PS3="Please select a option:"
         re='^[0-6]+$'
@@ -278,7 +290,6 @@ init(){
                     "安装 Gost HTTP/2 代理服务" \
                     "创建证书更新 CronJob" \
                     "退出" ; do
-
             if ! [[ $REPLY =~ $re ]] ; then
                 echo -e "${COLOR_ERROR}Invalid option. Please input a number.${COLOR_NONE}"
                 break;
@@ -305,8 +316,8 @@ init(){
             fi
         done
     done
-
-     IFS=$OIFS  # Restore the IFS
+    echo "${opt}"
+    IFS=$OIFS  # Restore the IFS
 }
 
 init
