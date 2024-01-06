@@ -17,7 +17,7 @@ update_core(){
     echo "请选择要安装的Ubuntu版本的内核："
     echo "1) Ubuntu 18.04 LTS (Bionic Beaver)"
     echo "2) Ubuntu 20.04 LTS (Focal Fossa)"
-    echo "3) Ubuntu 22.04 LTS (Jammy Jellyfish)"
+    echo -e "3) Ubuntu 22.04 LTS (Jammy Jellyfish)\n"
     read -p "输入选择 (1-3): " user_choice
 
     case $user_choice in
@@ -104,9 +104,8 @@ check_docker() {
 
 
 check_container(){
-    has_container=$(sudo docker ps --format "{{.Names}}" | grep "$1")
+    has_container=$(sudo docker ps --format "{{.Names}}" | grep -w "^$1")
 
-    # test 命令规范： 0 为 true, 1 为 false, >1 为 error
     if [ -n "$has_container" ] ;then
         return 0
     else
@@ -144,107 +143,238 @@ create_cert() {
     sudo certbot certonly --standalone -d $domain
 }
 
-
-install_gost() {
-    if ! [ -x "$(command -v docker)" ]; then
-        echo -e "${COLOR_ERROR}未发现Docker，请求安装 Docker ! ${COLOR_NONE}" 
-        return
+create_nginx_static_file(){
+    mkdir -p /var/www/html
+    FILENAME=$1
+    
+    if [ -f "$FILENAME" ]; then
+        return 0
     fi
-
-    if check_container gost ; then
-        echo -e "${COLOR_ERROR}Gost 容器已经在运行了，你可以手动停止容器，并删除容器，然后再执行本命令来重新安装 Gost。 ${COLOR_NONE}"
-        return
-    fi
-
-    echo "准备启动 Gost 代理程序,为了安全,需要使用用户名与密码进行认证."
-    read -p "请输入你要使用的域名：" DOMAIN
-    read -p "请输入你要使用的用户名:" USER
-    DEFAULT_PASS=$(openssl rand -base64 12)
-    read -p "请输入你要使用的密码(随机生成 $DEFAULT_PASS):" PASS
-    read -p "请输入HTTP/2需要侦听的端口号(443):" PORT
-
-    echo "选择流量伪装方式"
-    echo "1) HTTP 状态码(404)"
-    echo "2) Web 服务(Nginx 默认页面)"
-    read -p "输入选择 (1-2) 或者 q 退出安装: " user_choice
-    case $user_choice in
-        1)
-            PROBE_RESIST="code:404"
-            ;;
-        2)
-            mkdir -p /var/www/html
-            # write nginx default page to index.html
-            cat > /var/www/html/index.html <<EOF
+    cat > $FILENAME <<EOF
 <!DOCTYPE html>
 <html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-    body {
+  <head>
+    <title>Welcome to nginx!</title>
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+      body {
         width: 35em;
         margin: 0 auto;
         font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-</body>
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to nginx!</h1>
+    <p>
+      If you see this page, the nginx web server is successfully installed and
+      working. Further configuration is required.
+    </p>
+
+    <p>
+      For online documentation and support please refer to
+      <a href="http://nginx.org/">nginx.org</a>.<br />
+      Commercial support is available at
+      <a href="http://nginx.com/">nginx.com</a>.
+    </p>
+
+    <p><em>Thank you for using nginx.</em></p>
+  </body>
 </html>
 EOF
-            sudo chown -R www-data:www-data /var/www/html
-            PROBE_RESIST="file:/var/www/html/index.html"
+    return 0
+}
+
+set_config() {
+    # check if docker installed
+    if ! [ -x "$(command -v docker)" ]; then
+        echo -e "${COLOR_ERROR}未发现Docker，请求安装 Docker ! ${COLOR_NONE}" 
+        return 1
+    fi
+
+    PROXY_TYPE=$1
+    # check if container already exist
+    if check_container $PROXY_TYPE ; then
+        echo -e "${COLOR_ERROR}$PROXY_TYPE 容器已经在运行了，你可以手动停止容器，并删除容器，然后再执行本命令来重新安装 ${COLOR_NONE}"
+        return 1
+    fi
+
+    DEFAULT_PASS=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9-' | cut -c 1-12)
+    NGINX_FILENAME="/var/www/html/proxy.html"
+    
+
+    read -p "请输入你要使用的域名 " DOMAIN
+   
+    if [ $PROXY_TYPE == "gost" ]; then
+        DEFAULT_PORT=8443
+        read -p "请输入 gost 侦听的端口号(默认 $DEFAULT_PORT) " PORT
+        read -p "请输入你要使用的用户名 " USER
+    else
+        DEFAULT_PORT=9443
+        read -p "请输入 hysteria 侦听的端口号(默认 $DEFAULT_PORT) " PORT
+    fi
+
+    read -p "请输入你要使用的密码(随机生成 $DEFAULT_PASS) " PASS
+
+    echo -e "选择流量伪装方式\n"
+    echo -e "\t1) 本地静态文件 (Nginx 默认页面)"
+    echo -e "\t2) Web 代理 (https://news.ycombinator.com/)"
+    echo -e "\t3) HTTP 状态码（404）"
+    echo -e "\tq) 退出安装\n"
+    read -p "输入选项 (1-3) " user_choice
+    case $user_choice in
+        1)
+            if ! create_nginx_static_file $NGINX_FILENAME; then
+                exit 1
+            fi
+
+            PROBE_RESISTTANCE="file:$NGINX_FILENAME"
+            MASQUERADE_TYPE="file"
             ;;
-        q)
-            echo "程序退出"
-            exit 1
+        2)
+            PROBE_RESISTTANCE="web:news.ycombinator.com"
+            MASQUERADE_TYPE="proxy"
+            ;;
+        3)
+            PROBE_RESISTTANCE="code:404"
+            MASQUERADE_TYPE="string"
             ;;
         *)
-            echo -e "${COLOR_ERROR}无效的选择，请输入选择 (1-2) 或者 q 退出安装。${COLOR_NONE}"
+            echo -e "${COLOR_ERROR}无效的选择，请输入选项 (1-3) ${COLOR_NONE}"
             ;;
     esac
 
+    CERT_DIR=/etc/letsencrypt/live
+    TLS_CERT_FILE=${CERT_DIR}/${DOMAIN}/fullchain.pem
+    TLS_KEY_FILE=${CERT_DIR}/${DOMAIN}/privkey.pem
+
+    if [ ! -f "$TLS_CERT_FILE" ] || [ ! -f "$TLS_KEY_FILE" ]; then
+        echo -e "\n${COLOR_ERROR}证书文件不存在，请检查证书是否创建或域名是否填写正确。${COLOR_NONE}"
+        exit 1
+    fi
+
     if [[ -z "${USER// }" ]]; then
-        echo -e "${COLOR_ERROR}用户名不能为空 !${COLOR_NONE}"
-        exit 1        
+        echo -e "\n${COLOR_ERROR}用户名不能为空 !${COLOR_NONE}"
+        exit 1
     fi
 
-    if [[ -z "${PORT// }" ]] || ! [[ "${PORT}" =~ ^[0-9]+$ ]] || ! [ "$PORT" -ge 1 -a "$PORT" -le 655535 ]; then
-        echo -e "${COLOR_ERROR}非法端口,使用默认端口 443 !${COLOR_NONE}"
-        PORT=443
+    if ! [[ "${PORT}" =~ ^[0-9]+$ ]] || ! [ "$PORT" -ge 1 -a "$PORT" -le 655535 ]; then
+        echo -e "\n${COLOR_ERROR}非法端口，使用默认端口 !${COLOR_NONE}"
+        PORT=$DEFAULT_PORT
     fi
-
-    
 
     if [[ -z "${PASS// }" ]]; then
         PASS=$DEFAULT_PASS
     fi
 
-    echo -e "${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
-    echo -e "${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
-    echo -e "${COLOR_SUCC}HTTP/2端口: ${PORT}${COLOR_NONE}"
+    echo -e "\n\t${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
+    echo -e "\t${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
+    echo -e "\t${COLOR_SUCC}端口: ${PORT}${COLOR_NONE}\n"
+    return 0
+}
 
-    echo "开始启动 Gost 代理程序"
+install_gost() {
 
-    BIND_IP=0.0.0.0
-    CERT_DIR=/etc/letsencrypt/
-    CERT=${CERT_DIR}/live/${DOMAIN}/fullchain.pem
-    KEY=${CERT_DIR}/live/${DOMAIN}/privkey.pem
+    echo -e "\nGost v3 配置\n"
 
-    sudo docker run -d --name gost \
-        -v ${CERT_DIR}:${CERT_DIR}:ro \
-        --net=host ginuerzh/gost \
-        -L "http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}&probe_resist=${PROBE_RESIST}&konck=www.google.com"
+    if ! set_config gost; then
+        exit 1
+    fi
+
+    echo -e "开始启动 Gost v3 代理程序"
+
+    GOST_CONFIG_FILE="$(pwd)/gost.yaml"
+    cat > "$GOST_CONFIG_FILE" <<EOF
+services:
+- name: service-0
+  addr: ":$PORT"
+  handler:
+    type: http2
+    auth:
+      username: $USER
+      password: $PASS
+    metadata:
+      knock: www.google.com
+      probeResistance: $PROBE_RESISTTANCE
+    header:
+      Proxy-Agent: None
+  listener:
+    type: http2
+    tls:
+      certFile: /etc/tls/cert.pem
+      keyFile: /etc/tls/key.pem
+EOF
+
+    sudo docker run -d \
+      --name gost \
+      --network host \
+      --restart always \
+      --workdir /etc/gost \
+      --volume $NGINX_FILENAME:$NGINX_FILENAME \
+      --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
+      --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
+      --volume $GOST_CONFIG_FILE:/etc/gost/gost.yml \
+      gogost/gost -C /etc/gost/gost.yml
     
-    echo -e "${COLOR_SUCC}Gost 代理程序已经启动成功！${COLOR_NONE}"
+    echo -e "\n${COLOR_SUCC}gost 代理程序已经启动成功！${COLOR_NONE}"
+    rm -rf $GOST_CONFIG_FILE
     
-    echo "通过浏览器插件（e.g. SwitchyOmega）代理，请先访问 www.google.com"
-    echo "Surge配置: ${DOMAIN} = https, ${DOMAIN}, ${PORT}, username=${USER}, password=${PASS}, over-tls=true"
-    echo "Quantumult X 配置: http=${DOMAIN}:${PORT}, username=${USER}, password=${PASS}, over-tls=true, fast-open=false, udp-relay=false, tag=${DOMAIN}"
+    echo -e "\n${COLOR_ERROR}通过浏览器插件（e.g. SwitchyOmega）代理，请先访问 www.google.com${COLOR_NONE}\n"
+    echo -e "Surge配置:\n"
+    echo -e "\t${DOMAIN} = https, ${DOMAIN}, ${PORT}, username=${USER}, password=${PASS}, over-tls=true"
+    echo -e "\nQuantumult X 配置:\n"
+    echo -e "\thttp=${DOMAIN}:${PORT}, username=${USER}, password=${PASS}, over-tls=true, fast-open=false, udp-relay=false, tag=${DOMAIN}\n"
 }
 
 
 install_hysteria2(){
+    echo -e "\nHysteria 2 配置\n"
+    
+    if ! set_config hysteria; then
+        exit 1
+    fi
+
+    HYSTERIA_CONFIG_FILE="$(pwd)/hysteria.yml"
+    cat > $HYSTERIA_CONFIG_FILE <<EOF
+listen: :$PORT
+
+tls:
+  cert: /etc/tls/cert.pem
+  key: /etc/tls/key.pem
+
+auth:
+  type: password
+  password: $PASS 
+
+masquerade: 
+  type: $MASQUERADE_TYPE
+  file:
+    dir: /var/www/html/index.html
+  proxy:
+    url: https://news.ycombinator.com/
+    rewriteHost: true
+  string:
+    content: Not Found 
+    headers: 
+      content-type: text/plain
+    statusCode: 404 
+EOF
+
+    sudo docker run -d \
+      --name hysteria \
+      --restart always \
+      --network host \
+       --workdir /etc/hysteria \
+      --volume $NGINX_FILENAME:/var/www/html/index.html \
+      --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
+      --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
+      --volume $HYSTERIA_CONFIG_FILE:/etc/hysteria/config.yml \
+      tobyxdd/hysteria server -c /etc/hysteria/config.yml
+
+      echo -e "\n${COLOR_SUCC}hysteria 代理程序已经启动成功！${COLOR_NONE}"
+      rm -rf $HYSTERIA_CONFIG_FILE
 }
 
 crontab_exists() {
@@ -262,9 +392,9 @@ create_cron_job(){
 
     if ! crontab_exists "docker restart gost"; then 
         echo "5 0 1 * * /usr/bin/docker restart gost" >> /var/spool/cron/crontabs/root
-        echo "${COLOR_SUCC}成功安装gost更新证书定时作业！${COLOR_NONE}"
+        echo "${COLOR_SUCC}成功添加更新证书定时作业！${COLOR_NONE}"
     else
-        echo "${COLOR_SUCC}gost更新证书定时作业已经成功安装过！${COLOR_NONE}"
+        echo "${COLOR_SUCC}更新证书定时作业已经添加！${COLOR_NONE}"
     fi
 }
 
@@ -282,16 +412,17 @@ init(){
 
     while true
     do
-        PS3="Please select a option:"
-        re='^[0-6]+$'
+        PS3="请输入你的选项（1-7）"
+        re='^[0-7]+$'
         select opt in "安装 TCP BBR 拥塞控制算法" \
                     "安装 Docker 服务程序" \
                     "创建 SSL 证书" \
-                    "安装 Gost HTTP/2 代理服务" \
+                    "安装 Gost v3 HTTP/2 代理服务" \
+                    "安装 Hyseria 2 代理服务" \
                     "创建证书更新 CronJob" \
                     "退出" ; do
             if ! [[ $REPLY =~ $re ]] ; then
-                echo -e "${COLOR_ERROR}Invalid option. Please input a number.${COLOR_NONE}"
+                echo -e "\n${COLOR_ERROR}无效选项，请输入 1-7。${COLOR_NONE}\n"
                 break;
             elif (( REPLY == 1 )) ; then
                 install_bbr
@@ -307,16 +438,19 @@ init(){
                 install_gost
                 break
             elif (( REPLY == 5 )) ; then
-                create_cron_job
+                install_hysteria2
                 break
             elif (( REPLY == 6 )) ; then
+                create_cron_job
+                break
+            elif (( REPLY == 7 )) ; then
                 exit
             else
-                echo -e "${COLOR_ERROR}无效选项，尝试另一个选项。${COLOR_NONE}"
+                echo -e "\n${COLOR_ERROR}无效选项，请输入 1-7。${COLOR_NONE}\n"
             fi
         done
     done
-    echo "${opt}"
+    echo -e "${opt}"
     IFS=$OIFS  # Restore the IFS
 }
 
