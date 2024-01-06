@@ -201,7 +201,7 @@ set_config() {
         return 1
     fi
 
-    DEFAULT_PASS=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9-' | cut -c 1-12)
+    DEFAULT_PASS=$(openssl rand -base64 48 | tr -dc 'a-zA-Z0-9+' | cut -c 1-16)
     NGINX_FILENAME="/var/www/html/proxy.html"
     
 
@@ -269,9 +269,10 @@ set_config() {
         PASS=$DEFAULT_PASS
     fi
 
+    echo -e "\n\t${COLOR_SUCC}域名: ${DOMAIN}${COLOR_NONE}"
+    echo -e "\t${COLOR_SUCC}端口: ${PORT}${COLOR_NONE}\n"
     echo -e "\n\t${COLOR_SUCC}用户名: ${USER}${COLOR_NONE}"
     echo -e "\t${COLOR_SUCC}密码: ${PASS}${COLOR_NONE}"
-    echo -e "\t${COLOR_SUCC}端口: ${PORT}${COLOR_NONE}\n"
     return 0
 }
 
@@ -285,8 +286,7 @@ install_gost() {
 
     echo -e "开始启动 Gost v3 代理程序"
 
-    GOST_CONFIG_FILE="$(pwd)/gost.yaml"
-    cat > "$GOST_CONFIG_FILE" <<EOF
+    cat > /tmp/gost.yml <<EOF
 services:
 - name: service-0
   addr: ":$PORT"
@@ -315,11 +315,11 @@ EOF
       --volume $NGINX_FILENAME:$NGINX_FILENAME \
       --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
       --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
-      --volume $GOST_CONFIG_FILE:/etc/gost/gost.yml \
+      --volume /tmp/gost.yml:/etc/gost/gost.yml \
       gogost/gost -C /etc/gost/gost.yml
     
     echo -e "\n${COLOR_SUCC}gost 代理程序已经启动成功！${COLOR_NONE}"
-    rm -rf $GOST_CONFIG_FILE
+    rm -rf /tmp/gost.yml
     
     echo -e "\n${COLOR_ERROR}通过浏览器插件（e.g. SwitchyOmega）代理，请先访问 www.google.com${COLOR_NONE}\n"
     echo -e "Surge配置:\n"
@@ -336,8 +336,7 @@ install_hysteria2(){
         exit 1
     fi
 
-    HYSTERIA_CONFIG_FILE="$(pwd)/hysteria.yml"
-    cat > $HYSTERIA_CONFIG_FILE <<EOF
+    cat > /tmp/hysteria.yml <<EOF
 listen: :$PORT
 
 tls:
@@ -359,7 +358,7 @@ masquerade:
     content: Not Found 
     headers: 
       content-type: text/plain
-    statusCode: 404 
+    statusCode: 404
 EOF
 
     sudo docker run -d \
@@ -370,11 +369,11 @@ EOF
       --volume $NGINX_FILENAME:/var/www/html/index.html \
       --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
       --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
-      --volume $HYSTERIA_CONFIG_FILE:/etc/hysteria/config.yml \
+      --volume /tmp/hysteria.yml:/etc/hysteria/config.yml \
       tobyxdd/hysteria server -c /etc/hysteria/config.yml
 
       echo -e "\n${COLOR_SUCC}hysteria 代理程序已经启动成功！${COLOR_NONE}"
-      rm -rf $HYSTERIA_CONFIG_FILE
+      rm -rf /tmp/hysteria.yml
 }
 
 crontab_exists() {
