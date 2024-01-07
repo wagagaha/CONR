@@ -308,13 +308,11 @@ services:
     tls:
       certFile: /etc/tls/cert.pem
       keyFile: /etc/tls/key.pem
-
 # cloudflare dns, block Malware and Adult Content
 # reference: https://developers.cloudflare.com/1.1.1.1/setup/
 resolvers:
 - name: resolver-0
   nameservers:
-    prefer: ipv6
     # DNS over HTTPS (DoH)
   - addr: https://family.cloudflare-dns.com/dns-query
     # DNS over TLS (DoT)
@@ -324,6 +322,7 @@ resolvers:
   - addr: 1.0.0.3
   - addr: 2606:4700:4700::1113
   - addr: 2606:4700:4700::1003
+
 EOF
 
     sudo docker run -d \
