@@ -286,10 +286,13 @@ install_gost() {
 
     echo -e "开始启动 Gost v3 代理程序"
 
-    cat > /tmp/gost.yml <<EOF
+    GOST_CONFIG_FILE="/etc/gost.yml"
+    rm -rf $GOST_CONFIG_FILE
+    cat > $GOST_CONFIG_FILE <<EOF
 services:
 - name: service-0
   addr: ":$PORT"
+  resolver: resolver-0
   handler:
     type: http2
     auth:
@@ -305,6 +308,22 @@ services:
     tls:
       certFile: /etc/tls/cert.pem
       keyFile: /etc/tls/key.pem
+
+# cloudflare dns, block Malware and Adult Content
+# reference: https://developers.cloudflare.com/1.1.1.1/setup/
+resolvers:
+- name: resolver-0
+  nameservers:
+    prefer: ipv6
+    # DNS over HTTPS (DoH)
+  - addr: https://family.cloudflare-dns.com/dns-query
+    # DNS over TLS (DoT)
+  - addr: tls://family.cloudflare-dns.com
+    # DNS over UDP
+  - addr: 1.1.1.3
+  - addr: 1.0.0.3
+  - addr: 2606:4700:4700::1113
+  - addr: 2606:4700:4700::1003
 EOF
 
     sudo docker run -d \
@@ -315,11 +334,10 @@ EOF
       --volume $NGINX_FILENAME:$NGINX_FILENAME \
       --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
       --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
-      --volume /tmp/gost.yml:/etc/gost/gost.yml \
+      --volume $GOST_CONFIG_FILE:/etc/gost/gost.yml \
       gogost/gost -C /etc/gost/gost.yml
     
     echo -e "\n${COLOR_SUCC}gost 代理程序已经启动成功！${COLOR_NONE}"
-    rm -rf /tmp/gost.yml
     
     echo -e "\n${COLOR_ERROR}通过浏览器插件（e.g. SwitchyOmega）代理，请先访问 www.google.com${COLOR_NONE}\n"
     echo -e "Surge配置:\n"
@@ -336,7 +354,9 @@ install_hysteria2(){
         exit 1
     fi
 
-    cat > /tmp/hysteria.yml <<EOF
+    HYSTERIA_CONFIG_FILE="/etc/hysteria.yml"
+    rm -rf $HYSTERIA_CONFIG_FILE
+    cat > $HYSTERIA_CONFIG_FILE <<EOF
 listen: :$PORT
 
 tls:
@@ -346,6 +366,29 @@ tls:
 auth:
   type: password
   password: $PASS 
+
+# cloudflare dns, block Malware and Adult Content
+# reference: https://developers.cloudflare.com/1.1.1.1/setup/
+resolver:
+  type: udp
+  tcp:
+  - addr: 1.1.1.3
+  - addr: 1.0.0.3
+    timeout: 4s 
+  udp:
+  - addr: 1.1.1.3
+  - addr: 1.0.0.3
+    timeout: 4s
+  tls:
+    addr: family.cloudflare-dns.com
+    timeout: 10s
+    sni: cloudflare-dns.com 
+    insecure: false 
+  https:
+    addr: family.cloudflare-dns.com/dns-query
+    timeout: 10s
+    sni: cloudflare-dns.com
+    insecure: false
 
 masquerade: 
   type: $MASQUERADE_TYPE
@@ -369,11 +412,10 @@ EOF
       --volume $NGINX_FILENAME:/var/www/html/index.html \
       --volume $TLS_CERT_FILE:/etc/tls/cert.pem:ro \
       --volume $TLS_KEY_FILE:/etc/tls/key.pem:ro \
-      --volume /tmp/hysteria.yml:/etc/hysteria/config.yml \
+      --volume $HYSTERIA_CONFIG_FILE:/etc/hysteria/config.yml \
       tobyxdd/hysteria server -c /etc/hysteria/config.yml
 
       echo -e "\n${COLOR_SUCC}hysteria 代理程序已经启动成功！${COLOR_NONE}"
-      rm -rf /tmp/hysteria.yml
 }
 
 crontab_exists() {
