@@ -10,7 +10,7 @@ If you only want to block ads, please do not use this rule, as platforms like we
 https://raw.githubusercontent.com/wagagaha/CONR/master/reject.conf
 ```
 
-## DOMAIN-SET, DIRECT
+## RULE-SET, DIRECT
 ```bash
 https://raw.githubusercontent.com/wagagaha/CONR/master/direct-domain.conf
 ```
