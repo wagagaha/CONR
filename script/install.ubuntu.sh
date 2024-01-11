@@ -366,17 +366,13 @@ auth:
   type: password
   password: $PASS 
 
-# cloudflare dns, block Malware and Adult Content
-# reference: https://developers.cloudflare.com/1.1.1.1/setup/
 resolver:
   type: udp
   tcp:
-  - addr: 1.1.1.3
-  - addr: 1.0.0.3
+    addr: 1.1.1.3
     timeout: 4s 
   udp:
-  - addr: 1.1.1.3
-  - addr: 1.0.0.3
+    addr: 1.1.1.3
     timeout: 4s
   tls:
     addr: family.cloudflare-dns.com
