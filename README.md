@@ -1,5 +1,5 @@
 # CONR
-Clean and Open Network
+Clean and Open Network, adjust with personal habits, so please be cautious when using it.
 
 ## DOMAIN-SET, REJECT
 If you only want to block ads, please do not use this rule, as platforms like weibo.cn are included in this list.
